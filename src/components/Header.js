@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Link, useLocation, useHistory } from 'react-router-dom';
+import { useLocation, useHistory } from 'react-router-dom';
 import searchIcon from '../images/searchIcon.svg';
 import profileIcon from '../images/profileIcon.svg';
 
-function Header({ title }) {
+function Header() {
   const location = useLocation();
   const history = useHistory();
   const [showSearch, setShowSearch] = useState(false);
@@ -41,32 +41,34 @@ function Header({ title }) {
     case isFavoriteRecipes:
       return 'Favorite Recipes';
     default:
-      return title;
+      break;
     }
   };
 
   return (
     <header>
-      <Link
-        to="/profile"
+      <img
+        src={ profileIcon }
+        alt="Ícone de perfil"
+        aria-hidden="true"
         data-testid="profile-top-btn"
         onClick={ handleProfileClick }
-      >
-        <img src={ profileIcon } alt="Ícone de perfil" />
-      </Link>
+      />
+
       {showSearchIcon && (
-        <button type="button" onClick={ toggleSearch }>
-          <img src={ searchIcon } alt="Ícone de pesquisa" />
-        </button>
+        <img
+          src={ searchIcon }
+          alt="Ícone de pesquisa"
+          aria-hidden="true"
+          data-testid="search-top-btn"
+          onClick={ toggleSearch }
+        />
+
       )}
       {showSearch && <input type="text" data-testid="search-input" />}
       <h1 data-testid="page-title">{pageTitle()}</h1>
     </header>
   );
 }
-
-Header.propTypes = {
-  title: PropTypes.string.isRequired,
-};
 
 export default Header;
