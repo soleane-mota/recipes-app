@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import RecipesContext from '../Context/RecipesContext';
+import ButtonFilter from './ButtonFilter';
 
 function Recipes() {
   const mealsRoute = useRouteMatch('/meals');
@@ -9,13 +10,14 @@ function Recipes() {
   const maxMealPerPage = 12;
   const mealCard = (
     <div>
-      {mealAPI.slice(0, maxMealPerPage).map(({ strMeal, idMeal, strMealThumb }) => (
-        <div key={ idMeal } data-testid={ `${idMeal}-recipe-card` }>
-          <h3 data-testid={ `${idMeal}-card-name` }>{strMeal}</h3>
+      <ButtonFilter />
+      {mealAPI.slice(0, maxMealPerPage).map(({ strMeal, strMealThumb }, index) => (
+        <div key={ index } data-testid={ `${index}-recipe-card` }>
+          <h3 data-testid={ `${index}-card-name` }>{strMeal}</h3>
           <img
             alt={ strMeal }
             src={ strMealThumb }
-            data-testid={ `${idMeal}-card-img` }
+            data-testid={ `${index}-card-img` }
             style={ { maxWidth: '100px' } }
           />
         </div>
@@ -25,13 +27,14 @@ function Recipes() {
 
   const drinkCard = (
     <div>
-      {drinkAPI.slice(0, maxMealPerPage).map(({ strDrink, idDrink, strDrinkThumb }) => (
-        <div key={ idDrink } data-testid={ `${idDrink}-recipe-card` }>
-          <h3 data-testid={ `${idDrink}-card-name` }>{strDrink}</h3>
+      <ButtonFilter />
+      {drinkAPI.slice(0, maxMealPerPage).map(({ strDrink, strDrinkThumb }, index) => (
+        <div key={ index } data-testid={ `${index}-recipe-card` }>
+          <h3 data-testid={ `${index}-card-name` }>{strDrink}</h3>
           <img
             alt={ strDrink }
             src={ strDrinkThumb }
-            data-testid={ `${idDrink}-card-img` }
+            data-testid={ `${index}-card-img` }
             style={ { maxWidth: '100px' } }
           />
         </div>
