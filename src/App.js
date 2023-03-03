@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import RecipesProvider from './Context/RecipesProvider';
 import Login from './pages/Login';
 import Meals from './pages/Meals';
 import Drinks from './pages/Drinks';
@@ -12,8 +13,9 @@ import FavoriteRecipes from './pages/FavoriteRecipes';
 
 function App() {
   return (
+   <RecipesProvider>
     <Router>
-      <div className="App">
+      <div className="App">      
         <Switch>
           <Route exact path="/" component={ Login } />
           <Route exact path="/meals" component={ Meals } />
@@ -34,8 +36,9 @@ function App() {
           <Route exact path="/done-recipes" component={ DoneRecipes } />
           <Route exact path="/favorite-recipes" component={ FavoriteRecipes } />
         </Switch>
-      </div>
-    </Router>
+       </div>
+      </Router>
+    </RecipesProvider>
   );
 }
 
