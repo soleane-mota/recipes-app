@@ -14,6 +14,18 @@ function Login() {
               placeholder="Email"
             />
           </label>
+          <input
+            type="password"
+            name="password"
+            data-testid="password-input"
+            placeholder="Senha"
+          />
+          <button
+            type="button"
+            data-testid="login-submit-btn"
+          >
+            Enter
+          </button>
         </form>
       </div>
     </div>
