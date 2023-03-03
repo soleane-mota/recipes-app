@@ -1,44 +1,83 @@
 import React, { useContext } from 'react';
-import { useRouteMatch } from 'react-router-dom';
+import { useRouteMatch, useHistory } from 'react-router-dom';
 import RecipesContext from '../Context/RecipesContext';
 import ButtonFilter from './ButtonFilter';
 
 function Recipes() {
   const mealsRoute = useRouteMatch('/meals');
-  const { mealAPI, drinkAPI, isloading } = useContext(RecipesContext);
-
+  const history = useHistory();
+  const { mealAPI,
+    drinkAPI,
+    isloading,
+    buttonFilter,
+    mealAPIFilter,
+    drinkAPIFilter,
+    isloadingFilter } = useContext(RecipesContext);
   const maxMealPerPage = 12;
+
+  const handleClick = (type, id) => {
+    history.push(`/${type}/${id}`);
+  };
+
+  const filterMainMeal = () => {
+    if (buttonFilter !== '' && !isloadingFilter) {
+      return mealAPIFilter;
+    }
+    return mealAPI;
+  };
+
+  const filterMainDrink = () => {
+    if (buttonFilter !== '' && !isloadingFilter) {
+      return drinkAPIFilter;
+    }
+    return drinkAPI;
+  };
+
   const mealCard = (
     <div>
       <ButtonFilter />
-      {mealAPI.slice(0, maxMealPerPage).map(({ strMeal, strMealThumb }, index) => (
-        <div key={ index } data-testid={ `${index}-recipe-card` }>
-          <h3 data-testid={ `${index}-card-name` }>{strMeal}</h3>
-          <img
-            alt={ strMeal }
-            src={ strMealThumb }
-            data-testid={ `${index}-card-img` }
-            style={ { maxWidth: '100px' } }
-          />
-        </div>
-      ))}
+      {filterMainMeal()
+        .slice(0, maxMealPerPage)
+        .map(({ strMeal, idMeal, strMealThumb }, index) => (
+          <div
+            key={ index }
+            data-testid={ `${index}-recipe-card` }
+            aria-hidden="true"
+            onClick={ () => handleClick('meals', idMeal) }
+          >
+            <h3 data-testid={ `${index}-card-name` }>{strMeal}</h3>
+            <img
+              alt={ strMeal }
+              src={ strMealThumb }
+              data-testid={ `${index}-card-img` }
+              style={ { maxWidth: '100px' } }
+            />
+          </div>
+        ))}
     </div>
   );
 
   const drinkCard = (
     <div>
       <ButtonFilter />
-      {drinkAPI.slice(0, maxMealPerPage).map(({ strDrink, strDrinkThumb }, index) => (
-        <div key={ index } data-testid={ `${index}-recipe-card` }>
-          <h3 data-testid={ `${index}-card-name` }>{strDrink}</h3>
-          <img
-            alt={ strDrink }
-            src={ strDrinkThumb }
-            data-testid={ `${index}-card-img` }
-            style={ { maxWidth: '100px' } }
-          />
-        </div>
-      ))}
+      {filterMainDrink()
+        .slice(0, maxMealPerPage)
+        .map(({ strDrink, idDrink, strDrinkThumb }, index) => (
+          <div
+            key={ index }
+            data-testid={ `${index}-recipe-card` }
+            aria-hidden="true"
+            onClick={ () => handleClick('drinks', idDrink) }
+          >
+            <h3 data-testid={ `${index}-card-name` }>{strDrink}</h3>
+            <img
+              alt={ strDrink }
+              src={ strDrinkThumb }
+              data-testid={ `${index}-card-img` }
+              style={ { maxWidth: '100px' } }
+            />
+          </div>
+        ))}
     </div>
   );
 
