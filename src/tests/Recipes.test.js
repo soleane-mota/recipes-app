@@ -1,7 +1,9 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import App from '../App';
 import meals from '../../cypress/mocks/meals';
+import Meals from '../pages/Meals';
 
 beforeEach(() => {
   jest.spyOn(global, 'fetch').mockResolvedValue(
@@ -14,6 +16,7 @@ test('Verifica se a API é chamada', () => {
   expect(global.fetch).toHaveBeenCalledTimes(4);
 });
 
-// test('Verifica se aparecem 12 comidas na tela', async () => {
-//   render(<App/>);
+// test('Verifica se aparecem 12 comidas na tela', () => {
+//   render(<Meals />);
+//   expect(screen.getByText('Meals')).toBeInTheDocument();
 // });
