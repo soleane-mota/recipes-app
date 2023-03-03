@@ -1,9 +1,5 @@
-import React, { Component } from 'react';
-
-export default class MealDetails extends Component {
-  render() {
-    return (
-      <div>MealDetails</div>
-    );
-  }
+export default function MealDetails() {
+  return (
+    <div>MealDetails</div>
+  );
 }

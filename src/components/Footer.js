@@ -1,18 +1,28 @@
-import { Link } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import drinkIcon from '../images/drinkIcon.svg';
 import mealIcon from '../images/mealIcon.svg';
 import styles from './Footer.module.css';
 
 export default function Footer() {
+  const history = useHistory();
+
   return (
     <footer data-testid="footer" className={ styles.container }>
-      <Link to="/drinks">
-        <img src={ drinkIcon } alt="bebidas" data-testid="drinks-bottom-btn" />
-      </Link>
+      <img
+        src={ drinkIcon }
+        alt="bebidas"
+        data-testid="drinks-bottom-btn"
+        onClick={ () => history.push('/drinks') }
+        aria-hidden="true"
+      />
 
-      <Link to="/meals">
-        <img src={ mealIcon } alt="comidas" data-testid="meals-bottom-btn" />
-      </Link>
+      <img
+        src={ mealIcon }
+        alt="comidas"
+        data-testid="meals-bottom-btn"
+        onClick={ () => history.push('/meals') }
+        aria-hidden="true"
+      />
     </footer>
   );
 }

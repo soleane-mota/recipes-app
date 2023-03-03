@@ -1,9 +1,5 @@
-import React, { Component } from 'react';
-
-export default class DrinkInProgress extends Component {
-  render() {
-    return (
-      <div>DrinkInProgress</div>
-    );
-  }
+export default function DrinkInProgress() {
+  return (
+    <div>DrinkInProgress</div>
+  );
 }

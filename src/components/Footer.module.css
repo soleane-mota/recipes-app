@@ -1,4 +1,9 @@
 .container {
+  background: rgba(82, 21, 147, 0.6);
   bottom: 0;
+  display: flex;
+  justify-content: space-around;
+  padding: 5px;
   position: fixed;
+  width: 100vw;
 }
