@@ -1,19 +1,21 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import RecipesContext from '../Context/RecipesContext';
 import useFetch from '../hooks/useFetch';
 
 export default function RecipeDetails() {
   const [specificFood, setSpecificFood] = useState([]);
   const { fetchFood } = useFetch();
   const { id } = useParams();
-  const { type } = useContext();
+  const { location } = useContext(RecipesContext);
 
   const meals = `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`;
   const drink = `https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=${id}`;
   const url = (type === 'food') ? meals : drink;
 
   useEffect(() => {
-    fetchFood(setSpecificFood, url);
+    // fetchFood(setSpecificFood, url);
+    console.log(location);
   }, []);
   return (
     <div>
