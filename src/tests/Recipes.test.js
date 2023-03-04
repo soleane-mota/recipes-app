@@ -1,49 +1,102 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
-import App from '../App';
-import meals from '../../cypress/mocks/meals';
-import drinks from '../../cypress/mocks/drinks';
 import RecipesProvider from '../Context/RecipesProvider';
+import Meals from '../pages/Meals';
+import Drinks from '../pages/Drinks';
 
-beforeEach(() => {
-  jest.spyOn(global, 'fetch').mockResolvedValue(
-    { json: jest.fn().mockResolvedValue(meals) },
-  );
-});
+const mockHistoryPush = jest.fn();
 
-beforeEach(() => {
-  jest.spyOn(global, 'fetch').mockResolvedValue(
-    { json: jest.fn().mockResolvedValue(drinks) },
-  );
-});
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useHistory: () => ({
+    push: mockHistoryPush,
+  }),
+}));
 
-test('Verifica se a API é chamada', () => {
-  render(<App />);
-  expect(global.fetch).toHaveBeenCalledTimes(4);
-});
+const primeiroCard = '0-card-name';
+const buttonBeef = 'Beef-category-filter';
+const buttonShake = 'Shake-category-filter';
 
-test('Verifica se aparecem 12 comidas na tela', async () => {
-  render(<App />);
-  const email = screen.getByTestId('email-input');
-  const password = screen.getByTestId('password-input');
-  const submit = screen.getByTestId('login-submit-btn');
-  userEvent.type(email, 'email@mail.com');
-  userEvent.type(password, '1234567');
-  expect(submit).toBeEnabled();
-  userEvent.click(submit);
-});
+describe('All tests', () => {
+  it('Test button filter', async () => {
+    render(
+      <MemoryRouter initialEntries={ [{ pathname: '/meals' }] }>
+        <RecipesProvider>
+          <Meals />
+        </RecipesProvider>
+      </MemoryRouter>,
+    );
+    await waitFor(() => {
+      expect(screen.getByTestId(buttonBeef)).toBeInTheDocument();
+    }, { timeout: 3000 });
 
-it('Verifica se possui um ícone que redireciona para tela Drinks', async () => {
-  render(<RecipesProvider><App /></RecipesProvider>, ['/meals']);
+    await waitFor(() => {
+      expect(screen.getByTestId(primeiroCard)).toBeInTheDocument();
+    }, { timeout: 3000 });
 
-  await waitFor(() => {
-    expect(screen.getByRole('button')).toBeInTheDocument();
+    const carregando = screen.getByText('Corba');
+    expect(carregando).toBeInTheDocument();
+
+    userEvent.click(screen.getByTestId(buttonBeef));
+
+    await waitFor(() => {
+      expect(screen.getByTestId(primeiroCard)).toHaveTextContent('Beef and Mustard Pie');
+    }, { timeout: 3000 });
   });
 
-  const btnDrinks = screen.getAllByRole('button');
-  expect(btnDrinks).toHaveLength(6);
+  it('Test button card Meals', async () => {
+    render(
+      <MemoryRouter initialEntries={ [{ pathname: '/meals' }] }>
+        <RecipesProvider>
+          <Meals />
+        </RecipesProvider>
+      </MemoryRouter>,
+    );
+    await waitFor(() => {
+      expect(screen.getByTestId(buttonBeef)).toBeInTheDocument();
+    }, { timeout: 3000 });
 
-  const carregando = screen.getByText('Corba');
-  expect(carregando).toBeInTheDocument();
-}, 30000);
+    await waitFor(() => {
+      expect(screen.getByTestId(primeiroCard)).toBeInTheDocument();
+    }, { timeout: 3000 });
+
+    userEvent.click(screen.getByTestId(primeiroCard));
+
+    expect(mockHistoryPush).toHaveBeenCalledWith('/meals/52977');
+  });
+
+  it('Test button card Drinks', async () => {
+    render(
+      <MemoryRouter initialEntries={ [{ pathname: '/drinks' }] }>
+        <RecipesProvider>
+          <Drinks />
+        </RecipesProvider>
+      </MemoryRouter>,
+    );
+    await waitFor(() => {
+      expect(screen.getByTestId(buttonShake)).toBeInTheDocument();
+    }, { timeout: 3000 });
+
+    await waitFor(() => {
+      expect(screen.getByTestId(primeiroCard)).toBeInTheDocument();
+    }, { timeout: 3000 });
+
+    userEvent.click(screen.getByTestId(buttonShake));
+    await waitFor(() => {
+      expect(screen.getByTestId(primeiroCard)).toBeInTheDocument();
+      expect(screen.getByTestId(primeiroCard)).toHaveTextContent('151 Florida Bushwacker');
+    }, { timeout: 3000 });
+
+    userEvent.click(screen.getByTestId(buttonShake));
+    expect(screen.getByTestId(primeiroCard)).toHaveTextContent('GG');
+    userEvent.click(screen.getByTestId(buttonShake));
+    userEvent.click(screen.getByTestId('All-category-filter'));
+    expect(screen.getByTestId(primeiroCard)).toHaveTextContent('GG');
+
+    userEvent.click(screen.getByTestId(primeiroCard));
+
+    expect(mockHistoryPush).toHaveBeenCalledWith('/drinks/15997');
+  });
+});
