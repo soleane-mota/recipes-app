@@ -8,6 +8,7 @@ function ButtonFilter() {
   const { drinkAPICategory,
     mealAPICategory,
     setButtonfilter,
+    buttonFilter,
     setIsloadingFilter,
     setLocation } = useContext(RecipesContext);
   const maxListCategory = 5;
@@ -27,9 +28,15 @@ function ButtonFilter() {
           value={ strCategory }
           data-testid={ `${strCategory}-category-filter` }
           onClick={ (e) => {
-            setButtonfilter(e.target.value);
-            setIsloadingFilter(false);
-            setLocation(location.pathname);
+            if (e.target.value === buttonFilter) {
+              setIsloadingFilter(true);
+              setButtonfilter('');
+            }
+            if (e.target.value !== buttonFilter) {
+              setButtonfilter(e.target.value);
+              setIsloadingFilter(false);
+              setLocation(location.pathname);
+            }
           } }
         >
           {strCategory}
@@ -37,6 +44,7 @@ function ButtonFilter() {
         </button>))}
       <button
         data-testid="All-category-filter"
+        value="All"
         onClick={ () => {
           setButtonfilter('');
           setIsloadingFilter(true);
