@@ -3,6 +3,8 @@ import Header from '../components/Header';
 
 export default function DoneRecipes() {
   return (
-    <div><Header title="Done Recipes" showSearch /></div>
+    <div>
+      <Header title="Done Recipes" showSearch />
+    </div>
   );
 }

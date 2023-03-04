@@ -7,7 +7,6 @@ function Header() {
   const location = useLocation();
   const history = useHistory();
   const [showSearch, setShowSearch] = useState(false);
-  // const [showSearchInput, setShowSearchInput] = useState(false);
   const isMealsPage = location.pathname === '/meals';
   const isDrinksPage = location.pathname === '/drinks';
   const isProfile = location.pathname === '/profile';
@@ -21,10 +20,6 @@ function Header() {
   const toggleSearch = () => {
     setShowSearch(!showSearch);
   };
-
-  // const toggleSearchInput = () => {
-  //     setShowSearchInput(!showSearchInput);
-  //   };
 
   const showSearchIcon = !isProfile && !isDoneRecipes && !isFavoriteRecipes;
 
