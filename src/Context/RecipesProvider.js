@@ -69,6 +69,7 @@ function RecipesProvider({ children }) {
       isloading,
       isloadingFilter,
       mealAPI,
+      location,
       drinkAPI,
       drinkAPICategory,
       mealAPICategory,
