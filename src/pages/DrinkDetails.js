@@ -1,9 +1,8 @@
-import React, { Component } from 'react';
+import React from 'react';
+import RecipeDetails from '../components/RecipeDetails';
 
-export default class DrinkDetails extends Component {
-  render() {
-    return (
-      <div>DrinkDetails</div>
-    );
-  }
+export default function DrinkDetails() {
+  return (
+    <RecipeDetails />
+  );
 }
