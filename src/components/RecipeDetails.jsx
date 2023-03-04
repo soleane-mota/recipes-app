@@ -1,53 +1,57 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import RecipesContext from '../Context/RecipesContext';
+import React, { useEffect, useState } from 'react';
+import { useLocation, useParams } from 'react-router-dom';
+import ReactPlayer from 'react-player';
 import useFetch from '../hooks/useFetch';
+import useObjectReduce from '../hooks/useObjectReduce';
 
 export default function RecipeDetails() {
-  const [specificFood, setSpecificFood] = useState([]);
-  const { fetchFood } = useFetch();
+  const { pathname } = useLocation();
   const { id } = useParams();
-  const { location } = useContext(RecipesContext);
-
   const meals = `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`;
   const drink = `https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=${id}`;
-  const url = (type === 'food') ? meals : drink;
+  const url = (pathname.includes('meals')) ? meals : drink;
+
+  const [specificFood, setSpecificFood] = useState([]);
+  const ingredient = useObjectReduce(specificFood, 'Ingredient');
+  const measure = useObjectReduce(specificFood, 'strMeasure');
+  const { fetchFood } = useFetch(setSpecificFood, url);
 
   useEffect(() => {
-    // fetchFood(setSpecificFood, url);
-    console.log(location);
+    fetchFood();
   }, []);
+
+  useEffect(() => {
+    ingredient.filterObjectKeys();
+    measure.filterObjectKeys();
+  }, [specificFood]);
+
   return (
     <div>
-      {specificFood?.map((food) => (
-        <div key={ food.name }>
-          <p data-testid="recipe-title">{ food.name }</p>
+      { specificFood?.map((food) => (
+        <div key={ food.strMeal || food.strDrink }>
+          <p data-testid="recipe-title">{ food.strMeal || food.strDrink }</p>
           <h3
             data-testid="recipe-category"
           >
-            { food.category ? food.category : food.alcoholic }
+            { pathname.includes('meals') ? food.strCategory : food.strAlcoholic }
           </h3>
-          <img src={ food.img } alt={ food.name } data-testid="recipe-photo" />
-          {food.igredients?.map((igredient, index) => (
+          <img
+            src={ food.strMealThumb || food.strDrinkThumb }
+            alt={ food.strMeal }
+            data-testid="recipe-photo"
+            style={ { maxWidth: 200 } }
+          />
+          {measure.results?.map((qntt, index) => (
             <p
               key={ index }
               data-testid={ `${index}-ingredient-name-and-measure` }
             >
-              { igredient }
+              { `${qntt} ${ingredient.results[index]}` }
             </p>
           ))}
-          <p data-testid="instructions">{ food.instructions }</p>
-          { !food.movie ? '' : (
-            <video width="320" height="240" controls>
-              <track
-                src="captions_en.vtt"
-                kind="captions"
-                srcLang="en"
-                label="english_captions"
-              />
-              <source src={ food.movie } type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
+          <p data-testid="instructions">{ food.strInstructions }</p>
+          { !food.strYoutube ? '' : (
+            <ReactPlayer url={ food.strYoutube } data-testid="video" />
           )}
         </div>
       ))}
