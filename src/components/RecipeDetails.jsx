@@ -18,12 +18,12 @@ export default function RecipeDetails() {
 
   useEffect(() => {
     fetchFood();
-  }, []);
+  }, [fetchFood]);
 
   useEffect(() => {
     ingredient.filterObjectKeys();
     measure.filterObjectKeys();
-  }, [specificFood]);
+  }, [ingredient, measure, specificFood]);
 
   return (
     <div>
