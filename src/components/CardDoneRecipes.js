@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import clipboardCopy from 'clipboard-copy';
 import { useHistory } from 'react-router-dom';
+import RecipesContext from '../Context/RecipesContext';
 import shareIcon from '../images/shareIcon.svg';
 
 function CardDoneRecipes() {
@@ -33,9 +34,8 @@ function CardDoneRecipes() {
 
   // tudo o que está acima é pra deletar no push
   const [copy, setCopy] = useState({});
+  const { buttonFilter } = useContext(RecipesContext);
   const history = useHistory();
-  const pathname = history.location.pathname.split('/');
-  const path = pathname[1];
   const doneRecipes = JSON.parse(localStorage.getItem('doneRecipes'));
 
   const variableDataTestID = (type, nationality, category, alcoholicOrNot) => {
@@ -47,18 +47,26 @@ function CardDoneRecipes() {
     }
   };
 
-  const share = (name, id) => {
-    clipboardCopy(`http://localhost:3000/${path}/${id}`);
+  const share = (name, id, type) => {
+    clipboardCopy(`http://localhost:3000/${type}s/${id}`);
     setCopy({ name });
   };
 
-  // const filter = () => {
-
-  // };
+  const doneFilter = () => {
+    if (buttonFilter === 'Drink') {
+      const drink = doneRecipes.filter((item) => item.type === 'drink');
+      return drink;
+    }
+    if (buttonFilter === 'Meal') {
+      const meal = doneRecipes.filter((item) => item.type === 'meal');
+      return meal;
+    }
+    return doneRecipes;
+  };
 
   return (
     <div>
-      { doneRecipes
+      { doneFilter()
         .map(
           (
             {
@@ -74,7 +82,20 @@ function CardDoneRecipes() {
             index,
           ) => (
             <div key={ index }>
-              <h3 data-testid={ `${index}-horizontal-name` }>{name}</h3>
+              <div
+                key={ index }
+                aria-hidden="true"
+                data-testid={ `${index}-horizontal-card` }
+                onClick={ () => history.push(`/${type}s/${id}`) }
+              >
+                <h3 data-testid={ `${index}-horizontal-name` }>{name}</h3>
+                <img
+                  alt={ name }
+                  src={ image }
+                  data-testid={ `${index}-horizontal-image` }
+                  style={ { maxWidth: '100px' } }
+                />
+              </div>
               <h4 data-testid={ `${index}-horizontal-top-text` }>{category}</h4>
               <h4 data-testid={ `${index}-horizontal-done-date` }>{doneDate}</h4>
               {tags.map((tag, i) => (
@@ -96,15 +117,9 @@ function CardDoneRecipes() {
                 alt="compartilhar"
                 aria-hidden="true"
                 data-testid={ `${index}-horizontal-share-btn` }
-                onClick={ () => share(name, id) }
+                onClick={ () => share(name, id, type) }
               />
               {copy.name === name ? <p>Link copied!</p> : ''}
-              <img
-                alt={ name }
-                src={ image }
-                data-testid={ `${index}-horizontal-image` }
-                style={ { maxWidth: '100px' } }
-              />
             </div>),
         ) }
     </div>
