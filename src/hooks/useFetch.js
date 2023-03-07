@@ -1,7 +1,8 @@
 import { useState } from 'react';
 
-export default function useFetch(setContextParams, url) {
+export default function useFetch(a, setContextParams, url) {
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const fetchFood = async () => {
     try {
@@ -10,10 +11,13 @@ export default function useFetch(setContextParams, url) {
       if (!response.ok) {
         throw new Error(result.message);
       }
-      setContextParams(url.includes('meal') ? result.meals : result.drinks);
+      a(url.includes('meal') ? result.meals : result.drinks);
+      setContextParams(url.includes('meal') ? result.meals[0] : result.drinks[0]);
+      setLoading(false);
     } catch (e) {
       setError(e);
+      setLoading(false);
     }
   };
-  return { error, fetchFood };
+  return { error, fetchFood, loading };
 }
