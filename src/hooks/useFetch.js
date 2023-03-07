@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function useFetch(a, setContextParams, url) {
+export default function useFetch(setArray, setContextParams, url) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -11,7 +11,7 @@ export default function useFetch(a, setContextParams, url) {
       if (!response.ok) {
         throw new Error(result.message);
       }
-      a(url.includes('meal') ? result.meals : result.drinks);
+      setArray(url.includes('meal') ? result.meals : result.drinks);
       setContextParams(url.includes('meal') ? result.meals[0] : result.drinks[0]);
       setLoading(false);
     } catch (e) {
