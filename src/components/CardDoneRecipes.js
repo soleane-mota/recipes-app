@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-// import {clipboard} from 'clipboard-copy';
+import clipboardCopy from 'clipboard-copy';
+import { useHistory } from 'react-router-dom';
 import shareIcon from '../images/shareIcon.svg';
 
 function CardDoneRecipes() {
@@ -31,7 +32,10 @@ function CardDoneRecipes() {
   localStorage.setItem('doneRecipes', JSON.stringify(recipes));
 
   // tudo o que está acima é pra deletar no push
-  const [copy, setCopy] = useState([]);
+  const [copy, setCopy] = useState({});
+  const history = useHistory();
+  const pathname = history.location.pathname.split('/');
+  const path = pathname[1];
   const doneRecipes = JSON.parse(localStorage.getItem('doneRecipes'));
 
   const variableDataTestID = (type, nationality, category, alcoholicOrNot) => {
@@ -43,9 +47,14 @@ function CardDoneRecipes() {
     }
   };
 
-  const handleClick = (index) => {
-    setCopy([...copy, index]);
+  const share = (name, id) => {
+    clipboardCopy(`http://localhost:3000/${path}/${id}`);
+    setCopy({ name });
   };
+
+  // const filter = () => {
+
+  // };
 
   return (
     <div>
@@ -53,6 +62,7 @@ function CardDoneRecipes() {
         .map(
           (
             {
+              id,
               type,
               nationality,
               category,
@@ -86,9 +96,9 @@ function CardDoneRecipes() {
                 alt="compartilhar"
                 aria-hidden="true"
                 data-testid={ `${index}-horizontal-share-btn` }
-                onClick={ () => handleClick(index) }
+                onClick={ () => share(name, id) }
               />
-              {copy ? <p>Link copied</p> : ''}
+              {copy.name === name ? <p>Link copied!</p> : ''}
               <img
                 alt={ name }
                 src={ image }

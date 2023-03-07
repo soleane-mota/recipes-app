@@ -1,19 +1,29 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
+import RecipesContext from '../Context/RecipesContext';
 
 function ButtonDoneRecipes({ name }) {
   const id = name.toLowerCase();
-  const handleClick = (value) => setDrinkOrFood(value);
+  const { isloading, setButtonfilter, buttonFilter, setIsloadingFilter } = useContext(RecipesContext);
 
-  // falta passar o state pro context e importar aqui
   return (
     <div>
       <button
         value={ name }
         data-testid={ `filter-by-${id}-btn` }
-        onClick={ (e) => handleClick(e.target.value) }
+        onClick={ (e) => {
+          if (e.target.value === buttonFilter) {
+            setIsloadingFilter(true);
+            setButtonfilter('');
+          }
+          if (e.target.value !== buttonFilter) {
+            setButtonfilter(e.target.value);
+            setIsloadingFilter(false);
+            // setLocation(location.pathname);
+          }
+        } }
       >
-        {name}
+        {name === 'All' ? name : `${name}s`}
       </button>
     </div>
   );
