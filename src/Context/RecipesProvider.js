@@ -88,7 +88,8 @@ function RecipesProvider({ children }) {
       buttonFilter,
       drinkAPIFilter,
       mealAPIFilter,
-      isloadingFilter],
+      isloadingFilter,
+      location],
   );
 
   return (

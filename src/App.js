@@ -32,8 +32,8 @@ function App() {
             component={ DrinkInProgress }
           />
           <Route exact path="/profile" component={ Profile } />
-          <Route exact path="/done" component={ DoneRecipes } />
-          <Route exact path="/favorites" component={ FavoriteRecipes } />
+          <Route exact path="/done-recipes" component={ DoneRecipes } />
+          <Route exact path="/favorite-recipes" component={ FavoriteRecipes } />
         </Switch>
       </div>
     </RecipesProvider>
