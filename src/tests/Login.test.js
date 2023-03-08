@@ -1,11 +1,12 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from '../App';
+import renderWithRouter from './helpers/renderWithRouter';
 
 describe('Teste tela de Login', () => {
   test('Testa se elementos existem na tela de Login', () => {
-    render(<App />);
+    renderWithRouter(<App />);
     const email = screen.getByTestId('email-input');
     const password = screen.getByTestId('password-input');
     const submit = screen.getByTestId('login-submit-btn');
@@ -14,7 +15,7 @@ describe('Teste tela de Login', () => {
     expect(submit).toBeInTheDocument();
   });
   test('Testa de input na tela de Login', () => {
-    render(<App />);
+    renderWithRouter(<App />);
     const email = screen.getByTestId('email-input');
     const password = screen.getByTestId('password-input');
     const submit = screen.getByTestId('login-submit-btn');
