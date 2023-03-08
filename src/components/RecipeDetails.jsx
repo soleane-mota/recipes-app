@@ -40,8 +40,8 @@ export default function RecipeDetails() {
 
   useEffect(() => {
     const sixRecomended = 6;
-    setRecomendedDrink(drinkAPI.slice(0, sixRecomended));
-    setRecomendedMeal(mealAPI.slice(0, sixRecomended));
+    setRecomendedDrink(drinkAPI?.slice(0, sixRecomended));
+    setRecomendedMeal(mealAPI?.slice(0, sixRecomended));
   }, [mealAPI, drinkAPI]);
 
   const responsive = {
@@ -77,8 +77,8 @@ export default function RecipeDetails() {
   return (
     <div>
       {loading && <div>Loading...</div>}
-      { specificRenderFood?.map((food, i) => (
-        <div key={ i }>
+      { specificRenderFood?.map((food, idx) => (
+        <div key={ idx }>
           <p data-testid="recipe-title">{ food.strMeal || food.strDrink }</p>
           <h3
             data-testid="recipe-category"
