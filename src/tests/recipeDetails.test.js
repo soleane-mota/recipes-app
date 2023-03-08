@@ -6,6 +6,12 @@ import App from '../App';
 import renderWithRouter from './helpers/renderWithRouter';
 import oneMeal from '../../cypress/mocks/oneMeal';
 
+const mockedWriteText = jest.fn();
+
+navigator.clipboard = {
+  writeText: mockedWriteText,
+};
+
 describe('testes da página de detalhes das receitas', () => {
   it('verifica se os detalhes da receita "Spicy Arrabiata Penne" estão corretos', async () => {
     jest.spyOn(global, 'fetch');
@@ -33,7 +39,31 @@ describe('testes da página de detalhes das receitas', () => {
       expect(screen.getByTestId('video')).toHaveAttribute('src', oneMeal.meals[0].strYoutube.replace('watch?v=', 'embed/'));
       const share = screen.getByTestId('share-btn');
       userEvent.click(share);
-      expect(screen.getByText(/link copied!/i)).toBeInTheDocument();
+      expect(mockedWriteText).toHaveBeenCalledTimes(1);
+      const startButton = screen.getByRole('button', { name: /start recipe/i });
+      userEvent.click(startButton);
+      expect(history.location.pathname).toBe('/meals/52771/in-progress');
     }, { timeout: 3000 });
+  });
+
+  it('verifica se os detalhes da receita "GG" estão corretos', async () => {
+    jest.spyOn(global, 'fetch');
+    global.fetch.mockImplementation(fetch);
+    const { history } = renderWithRouter(<App />);
+
+    act(() => {
+      history.push('/drinks/15997');
+    });
+
+    await waitFor(() => {
+      const name = screen.getByText('GG');
+      expect(name).toBeInTheDocument();
+    }, { timeout: 3000 });
+    const share = screen.getByTestId('share-btn');
+    userEvent.click(share);
+    expect(mockedWriteText).toHaveBeenCalledTimes(1);
+    const startButton = screen.getByTestId('start-recipe-btn');
+    userEvent.click(startButton);
+    expect(history.location.pathname).toBe('/drinks/15997/in-progress');
   });
 });
