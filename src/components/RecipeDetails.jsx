@@ -8,6 +8,8 @@ import useObjectReduce from '../hooks/useObjectReduce';
 import RecipesContext from '../Context/RecipesContext';
 import '../styles/recipeDetails.css';
 import shareIcon from '../images/shareIcon.svg';
+import whiteHeartIcon from '../images/whiteHeartIcon.svg';
+import blackHeartIcon from '../images/blackHeartIcon.svg';
 
 export default function RecipeDetails() {
   const { pathname } = useLocation();
@@ -23,6 +25,7 @@ export default function RecipeDetails() {
   const [specificRenderFood, setspecificRenderFood] = useState([]);
   const [recomendedMeal, setRecomendedMeal] = useState([]);
   const [recomendedDrink, setRecomendedDrink] = useState([]);
+  const [heartImg, setHeartImg] = useState(whiteHeartIcon);
   const ingredient = useObjectReduce(specificFood, 'Ingredient');
   const measure = useObjectReduce(specificFood, 'strMeasure');
   const { fetchFood, loading } = useFetch(setspecificRenderFood, setSpecificFood, url);
@@ -31,6 +34,8 @@ export default function RecipeDetails() {
   useEffect(() => {
     fetchFood();
     setspecificRenderFood([specificFood]);
+    const favorite = JSON.parse(localStorage.getItem('favoriteRecipes'));
+    if (favorite?.some((fav) => fav.id === id)) setHeartImg(blackHeartIcon);
   }, []);
 
   useEffect(() => {
@@ -74,6 +79,21 @@ export default function RecipeDetails() {
     } else history.push(`/drinks/${id}/in-progress`);
   }
 
+  const favoriteRecipe = (e, obj) => {
+    const oldFavorites = JSON.parse(localStorage.getItem('favoriteRecipes'));
+    let newFavorites = [];
+    if (oldFavorites) {
+      newFavorites = [...oldFavorites];
+    }
+    newFavorites.push(obj);
+    localStorage.setItem('favoriteRecipes', JSON.stringify(newFavorites));
+    if (e.target.src.includes('blackHeart')) {
+      const filteredFav = newFavorites?.filter((fav) => fav.id !== id);
+      localStorage.setItem('favoriteRecipes', JSON.stringify(filteredFav));
+      setHeartImg(whiteHeartIcon);
+    } else setHeartImg(blackHeartIcon);
+  };
+
   return (
     <div>
       {loading && <div>Loading...</div>}
@@ -91,17 +111,44 @@ export default function RecipeDetails() {
             data-testid="recipe-photo"
             style={ { maxWidth: 200 } }
           />
-          <button>
-            <img
-              src={ shareIcon }
-              alt="compartilhar"
-              aria-hidden="true"
-              data-testid="share-btn"
-              onClick={ () => share(pathname.includes('meals') ? 'meals/' : 'drinks/') }
-            />
-          </button>
+          <img
+            src={ shareIcon }
+            alt="share"
+            aria-hidden="true"
+            data-testid="share-btn"
+            onClick={ () => share(pathname.includes('meals') ? 'meals/' : 'drinks/') }
+          />
           {copy && <p>Link copied!</p>}
-          <button data-testid="favorite-btn">Favorite</button>
+          <img
+            src={ heartImg }
+            aria-hidden="true"
+            alt="favorite"
+            data-testid="favorite-btn"
+            onClick={ (e) => {
+              const mealFavorite = {
+                id: food.idMeal,
+                name: food.strMeal,
+                type: 'meal',
+                nationality: food.strArea,
+                category: food.strCategory,
+                alcoholicOrNot: '',
+                image: food.strMealThumb,
+              };
+              const drinkFavorite = {
+                id: food.idDrink,
+                name: food.strDrink,
+                type: 'drink',
+                nationality: '',
+                category: food.strCategory,
+                alcoholicOrNot: food.strAlcoholic,
+                image: food.strDrinkThumb,
+              };
+              favoriteRecipe(
+                e,
+                pathname.includes('meals') ? mealFavorite : drinkFavorite,
+              );
+            } }
+          />
           {measure.results?.map((qntt, index) => (
             <p
               key={ index }
