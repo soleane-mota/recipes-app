@@ -24,12 +24,12 @@ function App() {
           <Route exact path="/drinks/:id" component={ DrinkDetails } />
           <Route
             exact
-            path="/meals/:id/progress"
+            path="/meals/:id/in-progress"
             component={ MealInProgress }
           />
           <Route
             exact
-            path="/drinks/:id/progress"
+            path="/drinks/:id/in-progress"
             component={ DrinkInProgress }
           />
           <Route exact path="/profile" component={ Profile } />
@@ -37,7 +37,6 @@ function App() {
           <Route exact path="/favorite-recipes" component={ FavoriteRecipes } />
         </Switch>
       </div>
-
     </RecipesProvider>
   );
 }
