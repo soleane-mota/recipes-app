@@ -1,5 +1,9 @@
+import RecipeInProgress from '../components/RecipeInProgress';
+
 export default function MealInProgress() {
   return (
-    <div>MealInProgress</div>
+    <main>
+      <RecipeInProgress />
+    </main>
   );
 }
