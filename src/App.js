@@ -14,6 +14,7 @@ import FavoriteRecipes from './pages/FavoriteRecipes';
 function App() {
   return (
     <RecipesProvider>
+
       <div className="App">
         <Switch>
           <Route exact path="/" component={ Login } />

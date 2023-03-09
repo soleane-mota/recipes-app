@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import searchIcon from '../images/searchIcon.svg';
 import profileIcon from '../images/profileIcon.svg';
+import SearchBar from './SearchBar';
 
 function Header() {
   const location = useLocation();
@@ -60,7 +61,7 @@ function Header() {
         />
 
       )}
-      {showSearch && <input type="text" data-testid="search-input" />}
+      {showSearch && <SearchBar type="text" data-testid="search-input" />}
       <h1 data-testid="page-title">{pageTitle()}</h1>
     </header>
   );
