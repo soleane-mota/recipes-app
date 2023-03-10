@@ -8,6 +8,7 @@ import useObjectReduce from '../hooks/useObjectReduce';
 import RecipesContext from '../Context/RecipesContext';
 import '../styles/recipeDetails.css';
 import shareIcon from '../images/shareIcon.svg';
+import whiteHeartIcon from '../images/whiteHeartIcon.svg';
 
 export default function RecipeDetails() {
   const { pathname } = useLocation();
@@ -20,17 +21,15 @@ export default function RecipeDetails() {
   const [copy, setCopy] = useState(false);
 
   const [specificFood, setSpecificFood] = useState({});
-  const [specificRenderFood, setspecificRenderFood] = useState([]);
   const [recomendedMeal, setRecomendedMeal] = useState([]);
   const [recomendedDrink, setRecomendedDrink] = useState([]);
   const ingredient = useObjectReduce(specificFood, 'Ingredient');
   const measure = useObjectReduce(specificFood, 'strMeasure');
-  const { fetchFood, loading } = useFetch(setspecificRenderFood, setSpecificFood, url);
+  const { fetchFood, loading } = useFetch(setSpecificFood, url);
   const whatRecomended = pathname.includes('meals') ? recomendedDrink : recomendedMeal;
 
   useEffect(() => {
     fetchFood();
-    setspecificRenderFood([specificFood]);
   }, []);
 
   useEffect(() => {
@@ -76,52 +75,58 @@ export default function RecipeDetails() {
 
   return (
     <div>
-      {loading && <div>Loading...</div>}
-      { specificRenderFood?.map((food, idx) => (
-        <div key={ idx }>
-          <p data-testid="recipe-title">{ food.strMeal || food.strDrink }</p>
-          <h3
-            data-testid="recipe-category"
+      {loading && <p>Loading...</p>}
+      <div>
+        <h2 data-testid="recipe-title">
+          { specificFood.strMeal || specificFood.strDrink }
+        </h2>
+        <img
+          src={ specificFood.strMealThumb || specificFood.strDrinkThumb }
+          alt={ specificFood.strMeal }
+          data-testid="recipe-photo"
+          style={ { maxWidth: 200 } }
+        />
+        <h3
+          data-testid="recipe-category"
+        >
+          { pathname.includes('meals')
+            ? specificFood.strCategory
+            : specificFood.strAlcoholic }
+        </h3>
+        <img
+          src={ shareIcon }
+          alt="compartilhar"
+          aria-hidden="true"
+          data-testid="share-btn"
+          onClick={ () => share(pathname.includes('meals') ? 'meals/' : 'drinks/') }
+        />
+        {copy && <p>Link copied!</p>}
+        <img
+          src={ whiteHeartIcon }
+          alt="favorite"
+          data-testid="favorite-btn"
+          onClick={ () => history.push('/favorite-recipes') }
+          aria-hidden="true"
+        />
+        {measure.results?.map((qntt, index) => (
+          <p
+            key={ index }
+            data-testid={ `${index}-ingredient-name-and-measure` }
           >
-            { pathname.includes('meals') ? food.strCategory : food.strAlcoholic }
-          </h3>
-          <img
-            src={ food.strMealThumb || food.strDrinkThumb }
-            alt={ food.strMeal }
-            data-testid="recipe-photo"
-            style={ { maxWidth: 200 } }
+            { `${qntt} ${ingredient.results[index]}` }
+          </p>
+        ))}
+        <p data-testid="instructions">{ specificFood.strInstructions }</p>
+        { !specificFood.strYoutube ? '' : (
+          <iframe
+            data-testid="video"
+            title="video"
+            width="450"
+            height="315"
+            src={ specificFood.strYoutube.replace('watch?v=', 'embed/') }
           />
-          <button>
-            <img
-              src={ shareIcon }
-              alt="compartilhar"
-              aria-hidden="true"
-              data-testid="share-btn"
-              onClick={ () => share(pathname.includes('meals') ? 'meals/' : 'drinks/') }
-            />
-          </button>
-          {copy && <p>Link copied!</p>}
-          <button data-testid="favorite-btn">Favorite</button>
-          {measure.results?.map((qntt, index) => (
-            <p
-              key={ index }
-              data-testid={ `${index}-ingredient-name-and-measure` }
-            >
-              { `${qntt} ${ingredient.results[index]}` }
-            </p>
-          ))}
-          <p data-testid="instructions">{ food.strInstructions }</p>
-          { !food.strYoutube ? '' : (
-            <iframe
-              data-testid="video"
-              title="video"
-              width="450"
-              height="315"
-              src={ food.strYoutube.replace('watch?v=', 'embed/') }
-            />
-          )}
-        </div>
-      ))}
+        )}
+      </div>
       <Carousel responsive={ responsive } slidesToSlide={ 2 }>
         {whatRecomended?.map((food, index) => (
           <div key={ index } data-testid={ `${index}-recommendation-card` }>
