@@ -9,6 +9,8 @@ import RecipesContext from '../Context/RecipesContext';
 import '../styles/recipeDetails.css';
 import shareIcon from '../images/shareIcon.svg';
 import whiteHeartIcon from '../images/whiteHeartIcon.svg';
+import blackHeartIcon from '../images/blackHeartIcon.svg';
+
 
 export default function RecipeDetails() {
   const { pathname } = useLocation();
@@ -22,15 +24,17 @@ export default function RecipeDetails() {
 
   const [recomendedMeal, setRecomendedMeal] = useState([]);
   const [recomendedDrink, setRecomendedDrink] = useState([]);
+  const [heartImg, setHeartImg] = useState(whiteHeartIcon);
+
   const { specificFood, loading } = useFetch(url);
   const ingredient = useObjectReduce(specificFood, 'Ingredient');
   const measure = useObjectReduce(specificFood, 'strMeasure');
   const whatRecomended = pathname.includes('meals') ? recomendedDrink : recomendedMeal;
 
   useEffect(() => {
-    ingredient.filterObjectKeys();
-    measure.filterObjectKeys();
-  }, [specificFood]);
+    const favorite = JSON.parse(localStorage.getItem('favoriteRecipes'));
+    if (favorite?.some((fav) => fav.id === id)) setHeartImg(blackHeartIcon);
+  }, []);
 
   useEffect(() => {
     const sixRecomended = 6;
@@ -68,6 +72,21 @@ export default function RecipeDetails() {
     } else history.push(`/drinks/${id}/in-progress`);
   }
 
+  const favoriteRecipe = (e, obj) => {
+    const oldFavorites = JSON.parse(localStorage.getItem('favoriteRecipes'));
+    let newFavorites = [];
+    if (oldFavorites) {
+      newFavorites = [...oldFavorites];
+    }
+    newFavorites.push(obj);
+    localStorage.setItem('favoriteRecipes', JSON.stringify(newFavorites));
+    if (e.target.src.includes('blackHeart')) {
+      const filteredFav = newFavorites?.filter((fav) => fav.id !== id);
+      localStorage.setItem('favoriteRecipes', JSON.stringify(filteredFav));
+      setHeartImg(whiteHeartIcon);
+    } else setHeartImg(blackHeartIcon);
+  };
+
   return (
     <div>
       {loading && <p>Loading...</p>}
@@ -97,11 +116,34 @@ export default function RecipeDetails() {
         />
         {copy && <p>Link copied!</p>}
         <img
-          src={ whiteHeartIcon }
+          src={ heartImg }
+          aria-hidden="true"
           alt="favorite"
           data-testid="favorite-btn"
-          onClick={ () => history.push('/favorite-recipes') }
-          aria-hidden="true"
+          onClick={ (e) => {
+            const mealFavorite = {
+              id: specificFood.idMeal,
+              name: specificFood.strMeal,
+              type: 'meal',
+              nationality: specificFood.strArea,
+              category: specificFood.strCategory,
+              alcoholicOrNot: '',
+              image: specificFood.strMealThumb,
+            };
+            const drinkFavorite = {
+              id: specificFood.idDrink,
+              name: specificFood.strDrink,
+              type: 'drink',
+              nationality: '',
+              category: specificFood.strCategory,
+              alcoholicOrNot: specificFood.strAlcoholic,
+              image: specificFood.strDrinkThumb,
+            };
+            favoriteRecipe(
+              e,
+              pathname.includes('meals') ? mealFavorite : drinkFavorite,
+            );
+          } }
         />
         {measure.results?.map((qntt, index) => (
           <p

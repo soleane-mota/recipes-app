@@ -32,7 +32,7 @@ function CardDoneRecipes() {
 
   localStorage.setItem('doneRecipes', JSON.stringify(recipes));
 
-  // tudo o que está acima é pra deletar no push
+  // tudo o que está acima é pra deletar no push.
   const [copy, setCopy] = useState({});
   const { buttonFilter } = useContext(RecipesContext);
   const history = useHistory();
