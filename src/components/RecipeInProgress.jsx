@@ -7,7 +7,6 @@ import shareIcon from '../images/shareIcon.svg';
 import whiteHeartIcon from '../images/whiteHeartIcon.svg';
 // import blackHeartIcon from '../images/blackHeartIcon.svg';
 import styles from '../styles/RecipeInProgress.module.css';
-// import useLocalStorage from '../hooks/useLocalStorage';
 
 export default function RecipeInProgress() {
   const { pathname } = useLocation();
@@ -18,28 +17,59 @@ export default function RecipeInProgress() {
   const url = (pathname.includes('meals')) ? meals : drink;
 
   const [copy, setCopy] = useState(false);
-  const [specificFood, setSpecificFood] = useState({});
-  const [isChecked, setIsChecked] = useState([]);
-  const [hasClassName, setHasClassName] = useState([]);
-  // const [inProgressRecipes, setInProgressRecipes] = useLocalStorage(
-  //   'inProgressRecipes',
-  //   { drinks: {}, meals: {} },
-  // );
+  const [isChecked, setIsChecked] = useState(null);
 
+  const { specificFood, loading } = useFetch(url);
   const ingredient = useObjectReduce(specificFood, 'Ingredient');
   const measure = useObjectReduce(specificFood, 'strMeasure');
-  const { fetchFood, loading } = useFetch(setSpecificFood, url);
-
-  // console.log(specificFood);
-
-  useEffect(() => {
-    fetchFood();
-  }, []);
 
   useEffect(() => {
     ingredient.filterObjectKeys();
     measure.filterObjectKeys();
-  }, [specificFood]);
+
+    const getInProgress = JSON.parse(localStorage.getItem('inProgressRecipes'));
+
+    if (!getInProgress) {
+      return localStorage.setItem(
+        'inProgressRecipes',
+        JSON.stringify({ drinks: {}, meals: {} }),
+      );
+    }
+
+    if (pathname.includes('meals')) {
+      setIsChecked(getInProgress.meals[id] || []);
+      const inProgressMeals = {
+        ...getInProgress,
+        meals: { [id]: isChecked },
+      };
+      localStorage.setItem('inProgressRecipes', JSON.stringify(inProgressMeals));
+    } else {
+      setIsChecked(getInProgress.drinks[id] || []);
+      const inProgressDrinks = {
+        ...getInProgress,
+        drinks: { [id]: isChecked },
+      };
+      localStorage.setItem('inProgressRecipes', JSON.stringify(inProgressDrinks));
+    }
+  }, [id, pathname, specificFood]);
+
+  // Com ajuda do Bruno Alves e Felipe Nunes
+  useEffect(() => {
+    const getInProgress = JSON.parse(localStorage.getItem('inProgressRecipes'));
+    if (pathname.includes('meals')) {
+      const inProgressMeals = {
+        ...getInProgress,
+        meals: { [id]: isChecked },
+      };
+      localStorage.setItem('inProgressRecipes', JSON.stringify(inProgressMeals));
+    } else {
+      const inProgressDrinks = {
+        ...getInProgress,
+        drinks: { [id]: isChecked },
+      };
+      localStorage.setItem('inProgressRecipes', JSON.stringify(inProgressDrinks));
+    }
+  }, [id, isChecked, pathname]);
 
   const share = (urlID) => {
     clipboardCopy(`http://localhost:3000/${urlID}${id}/in-progress`);
@@ -56,13 +86,8 @@ export default function RecipeInProgress() {
       setIsChecked(removeCheck);
     } else {
       setIsChecked([...isChecked, name]);
-      
-
-      // const checkItem = (ingredient.results.map((item) => isChecked.includes(item)));
-      // setHasClassName(checkItem);
     }
-    console.log(hasClassName);
-  }, [hasClassName, ingredient, isChecked]);
+  }, [isChecked]);
 
   return (
     <div>
@@ -99,7 +124,7 @@ export default function RecipeInProgress() {
           aria-hidden="true"
         />
         {copy && <p>Link copied!</p>}
-        {measure.results?.map((qntt, index) => (
+        {measure && measure.results.map((qntt, index) => (
           <div key={ index }>
             <label
               htmlFor={ `ingredient-${index}` }
@@ -112,7 +137,7 @@ export default function RecipeInProgress() {
               <input
                 type="checkbox"
                 name={ ingredient.results[index] }
-                value={ `${qntt} ${ingredient.results[index]}` }
+                checked={ isChecked.includes(ingredient.results[index]) }
                 id={ `ingredient-${index}` }
                 onChange={ ({ target: { name } }) => handleChecked(name) }
               />

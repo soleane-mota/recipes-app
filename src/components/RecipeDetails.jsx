@@ -20,17 +20,12 @@ export default function RecipeDetails() {
   const url = (pathname.includes('meals')) ? meals : drink;
   const [copy, setCopy] = useState(false);
 
-  const [specificFood, setSpecificFood] = useState({});
   const [recomendedMeal, setRecomendedMeal] = useState([]);
   const [recomendedDrink, setRecomendedDrink] = useState([]);
+  const { specificFood, loading } = useFetch(url);
   const ingredient = useObjectReduce(specificFood, 'Ingredient');
   const measure = useObjectReduce(specificFood, 'strMeasure');
-  const { fetchFood, loading } = useFetch(setSpecificFood, url);
   const whatRecomended = pathname.includes('meals') ? recomendedDrink : recomendedMeal;
-
-  useEffect(() => {
-    fetchFood();
-  }, []);
 
   useEffect(() => {
     ingredient.filterObjectKeys();
