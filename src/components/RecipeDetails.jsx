@@ -11,7 +11,6 @@ import shareIcon from '../images/shareIcon.svg';
 import whiteHeartIcon from '../images/whiteHeartIcon.svg';
 import blackHeartIcon from '../images/blackHeartIcon.svg';
 
-
 export default function RecipeDetails() {
   const { pathname } = useLocation();
   const history = useHistory();
