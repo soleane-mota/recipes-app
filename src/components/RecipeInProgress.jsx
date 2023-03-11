@@ -17,16 +17,13 @@ export default function RecipeInProgress() {
   const url = (pathname.includes('meals')) ? meals : drink;
 
   const [copy, setCopy] = useState(false);
-  const [isChecked, setIsChecked] = useState(null);
+  const [isChecked, setIsChecked] = useState([]);
 
   const { specificFood, loading } = useFetch(url);
   const ingredient = useObjectReduce(specificFood, 'Ingredient');
   const measure = useObjectReduce(specificFood, 'strMeasure');
 
-  useEffect(() => {
-    ingredient.filterObjectKeys();
-    measure.filterObjectKeys();
-
+  const readLocalStorage = () => {
     const getInProgress = JSON.parse(localStorage.getItem('inProgressRecipes'));
 
     if (!getInProgress) {
@@ -37,24 +34,23 @@ export default function RecipeInProgress() {
     }
 
     if (pathname.includes('meals')) {
-      setIsChecked(getInProgress.meals[id] || []);
+      setIsChecked(getInProgress.meals[id]);
       const inProgressMeals = {
         ...getInProgress,
         meals: { [id]: isChecked },
       };
       localStorage.setItem('inProgressRecipes', JSON.stringify(inProgressMeals));
     } else {
-      setIsChecked(getInProgress.drinks[id] || []);
+      setIsChecked(getInProgress.drinks[id]);
       const inProgressDrinks = {
         ...getInProgress,
         drinks: { [id]: isChecked },
       };
       localStorage.setItem('inProgressRecipes', JSON.stringify(inProgressDrinks));
     }
-  }, [id, pathname, specificFood]);
+  };
 
-  // Com ajuda do Bruno Alves e Felipe Nunes
-  useEffect(() => {
+  const writeLocalStorage = useCallback(() => {
     const getInProgress = JSON.parse(localStorage.getItem('inProgressRecipes'));
     if (pathname.includes('meals')) {
       const inProgressMeals = {
@@ -70,6 +66,17 @@ export default function RecipeInProgress() {
       localStorage.setItem('inProgressRecipes', JSON.stringify(inProgressDrinks));
     }
   }, [id, isChecked, pathname]);
+
+  useEffect(() => {
+    ingredient.filterObjectKeys();
+    measure.filterObjectKeys();
+    readLocalStorage();
+  }, [specificFood]);
+
+  // Com ajuda do Bruno Alves e Felipe Nunes
+  useEffect(() => {
+    writeLocalStorage();
+  }, [writeLocalStorage]);
 
   const share = (urlID) => {
     clipboardCopy(`http://localhost:3000/${urlID}${id}/in-progress`);

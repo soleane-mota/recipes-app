@@ -36,6 +36,11 @@ export default function RecipeDetails() {
   }, []);
 
   useEffect(() => {
+    ingredient.filterObjectKeys();
+    measure.filterObjectKeys();
+  }, [specificFood]);
+
+  useEffect(() => {
     const sixRecomended = 6;
     setRecomendedDrink(drinkAPI?.slice(0, sixRecomended));
     setRecomendedMeal(mealAPI?.slice(0, sixRecomended));
@@ -144,7 +149,7 @@ export default function RecipeDetails() {
             );
           } }
         />
-        {measure.results?.map((qntt, index) => (
+        {measure && measure.results.map((qntt, index) => (
           <p
             key={ index }
             data-testid={ `${index}-ingredient-name-and-measure` }
