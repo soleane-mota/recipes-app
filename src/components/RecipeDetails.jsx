@@ -21,19 +21,16 @@ export default function RecipeDetails() {
   const url = (pathname.includes('meals')) ? meals : drink;
   const [copy, setCopy] = useState(false);
 
-  const [specificFood, setSpecificFood] = useState({});
-  const [specificRenderFood, setspecificRenderFood] = useState([]);
   const [recomendedMeal, setRecomendedMeal] = useState([]);
   const [recomendedDrink, setRecomendedDrink] = useState([]);
   const [heartImg, setHeartImg] = useState(whiteHeartIcon);
+
+  const { specificFood, loading } = useFetch(url);
   const ingredient = useObjectReduce(specificFood, 'Ingredient');
   const measure = useObjectReduce(specificFood, 'strMeasure');
-  const { fetchFood, loading } = useFetch(setspecificRenderFood, setSpecificFood, url);
   const whatRecomended = pathname.includes('meals') ? recomendedDrink : recomendedMeal;
 
   useEffect(() => {
-    fetchFood();
-    setspecificRenderFood([specificFood]);
     const favorite = JSON.parse(localStorage.getItem('favoriteRecipes'));
     if (favorite?.some((fav) => fav.id === id)) setHeartImg(blackHeartIcon);
   }, []);
@@ -96,79 +93,81 @@ export default function RecipeDetails() {
 
   return (
     <div>
-      {loading && <div>Loading...</div>}
-      { specificRenderFood?.map((food, idx) => (
-        <div key={ idx }>
-          <p data-testid="recipe-title">{ food.strMeal || food.strDrink }</p>
-          <h3
-            data-testid="recipe-category"
+      {loading && <p>Loading...</p>}
+      <div>
+        <h2 data-testid="recipe-title">
+          { specificFood.strMeal || specificFood.strDrink }
+        </h2>
+        <img
+          src={ specificFood.strMealThumb || specificFood.strDrinkThumb }
+          alt={ specificFood.strMeal }
+          data-testid="recipe-photo"
+          style={ { maxWidth: 200 } }
+        />
+        <h3
+          data-testid="recipe-category"
+        >
+          { pathname.includes('meals')
+            ? specificFood.strCategory
+            : specificFood.strAlcoholic }
+        </h3>
+        <img
+          src={ shareIcon }
+          alt="compartilhar"
+          aria-hidden="true"
+          data-testid="share-btn"
+          onClick={ () => share(pathname.includes('meals') ? 'meals/' : 'drinks/') }
+        />
+        {copy && <p>Link copied!</p>}
+        <img
+          src={ heartImg }
+          aria-hidden="true"
+          alt="favorite"
+          data-testid="favorite-btn"
+          onClick={ (e) => {
+            const mealFavorite = {
+              id: specificFood.idMeal,
+              name: specificFood.strMeal,
+              type: 'meal',
+              nationality: specificFood.strArea,
+              category: specificFood.strCategory,
+              alcoholicOrNot: '',
+              image: specificFood.strMealThumb,
+            };
+            const drinkFavorite = {
+              id: specificFood.idDrink,
+              name: specificFood.strDrink,
+              type: 'drink',
+              nationality: '',
+              category: specificFood.strCategory,
+              alcoholicOrNot: specificFood.strAlcoholic,
+              image: specificFood.strDrinkThumb,
+            };
+            favoriteRecipe(
+              e,
+              pathname.includes('meals') ? mealFavorite : drinkFavorite,
+            );
+          } }
+        />
+        {measure && measure.results.map((qntt, index) => (
+          <p
+            key={ index }
+            data-testid={ `${index}-ingredient-name-and-measure` }
           >
-            { pathname.includes('meals') ? food.strCategory : food.strAlcoholic }
-          </h3>
-          <img
-            src={ food.strMealThumb || food.strDrinkThumb }
-            alt={ food.strMeal }
-            data-testid="recipe-photo"
-            style={ { maxWidth: 200 } }
+            { `${qntt} ${ingredient.results[index]}` }
+          </p>
+        ))}
+        <p data-testid="instructions">{ specificFood.strInstructions }</p>
+        { !specificFood.strYoutube ? '' : (
+          <iframe
+            data-testid="video"
+            title="video"
+            width="450"
+            height="315"
+            src={ specificFood.strYoutube.replace('watch?v=', 'embed/') }
           />
-          <img
-            src={ shareIcon }
-            alt="share"
-            aria-hidden="true"
-            data-testid="share-btn"
-            onClick={ () => share(pathname.includes('meals') ? 'meals/' : 'drinks/') }
-          />
-          {copy && <p>Link copied!</p>}
-          <img
-            src={ heartImg }
-            aria-hidden="true"
-            alt="favorite"
-            data-testid="favorite-btn"
-            onClick={ (e) => {
-              const mealFavorite = {
-                id: food.idMeal,
-                name: food.strMeal,
-                type: 'meal',
-                nationality: food.strArea,
-                category: food.strCategory,
-                alcoholicOrNot: '',
-                image: food.strMealThumb,
-              };
-              const drinkFavorite = {
-                id: food.idDrink,
-                name: food.strDrink,
-                type: 'drink',
-                nationality: '',
-                category: food.strCategory,
-                alcoholicOrNot: food.strAlcoholic,
-                image: food.strDrinkThumb,
-              };
-              favoriteRecipe(
-                e,
-                pathname.includes('meals') ? mealFavorite : drinkFavorite,
-              );
-            } }
-          />
-          {measure.results?.map((qntt, index) => (
-            <p
-              key={ index }
-              data-testid={ `${index}-ingredient-name-and-measure` }
-            >
-              { `${qntt} ${ingredient.results[index]}` }
-            </p>
-          ))}
-          <p data-testid="instructions">{ food.strInstructions }</p>
-          { !food.strYoutube ? '' : (
-            <iframe
-              data-testid="video"
-              title="video"
-              width="450"
-              height="315"
-              src={ food.strYoutube.replace('watch?v=', 'embed/') }
-            />
-          )}
-        </div>
-      ))}
+        )}
+      </div>
       <Carousel responsive={ responsive } slidesToSlide={ 2 }>
         {whatRecomended?.map((food, index) => (
           <div key={ index } data-testid={ `${index}-recommendation-card` }>
