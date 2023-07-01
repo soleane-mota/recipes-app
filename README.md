@@ -13,10 +13,10 @@ O objetivo é demonstrar o conhecimento nas tecnologias aplicadas, no uso de met
 
 ## Tecnologias utilizadas
 
-- [![React][React.js]][React-url]
-  - Hooks
-  - Context API
-- [![Bootstrap][Bootstrap.com]][Bootstrap-url]
+- [![React][React-badge]][React-url]
+  - [![Hooks][hooks-badge]][hooks-url]
+  - [![Context_API][context-badge]][context-url]
+- [![Bootstrap][Bootstrap-badge]][Bootstrap-url]
 
 ## Começando
 
@@ -63,7 +63,11 @@ Para executar este projeto utilize o `npm`.
 
 [product-screenshot]: https://mailrelay.com/wp-content/uploads/2017/04/gifs-animados.jpg
 
-[React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
+[React-badge]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
 [React-url]: https://reactjs.org/
-[Bootstrap.com]: https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white
+[Bootstrap-badge]: https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white
 [Bootstrap-url]: https://getbootstrap.com
+[hooks-badge]: https://img.shields.io/badge/React%20Hooks-6417ad?style=for-the-badge
+[hooks-url]: https://legacy.reactjs.org/docs/hooks-intro.html
+[context-badge]: https://img.shields.io/badge/Context%20API-1a7a47?style=for-the-badge
+[context-url]: https://legacy.reactjs.org/docs/context.html
