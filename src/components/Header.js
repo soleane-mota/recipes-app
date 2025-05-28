@@ -51,6 +51,9 @@ function Header() {
         onClick={ handleProfileClick }
       />
 
+      {showSearch && <SearchBar type="text" data-testid="search-input" />}
+      <h1 data-testid="page-title">{pageTitle()}</h1>
+
       {showSearchIcon && (
         <img
           src={ searchIcon }
@@ -59,10 +62,7 @@ function Header() {
           data-testid="search-top-btn"
           onClick={ toggleSearch }
         />
-
       )}
-      {showSearch && <SearchBar type="text" data-testid="search-input" />}
-      <h1 data-testid="page-title">{pageTitle()}</h1>
     </header>
   );
 }
