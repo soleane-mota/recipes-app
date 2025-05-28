@@ -6,30 +6,6 @@ import shareIcon from '../images/shareIcon.svg';
 import blackHeartIcon from '../images/blackHeartIcon.svg';
 
 function CardFavoritesRecipes() {
-  // const favorites = [
-  //   {
-  //     id: '52771',
-  //     type: 'meal',
-  //     nationality: 'Italian',
-  //     category: 'Vegetarian',
-  //     alcoholicOrNot: '',
-  //     name: 'Spicy Arrabiata Penne',
-  //     image: 'https://www.themealdb.com/images/media/meals/ustsqw1468250014.jpg',
-  //   },
-  //   {
-  //     id: '178319',
-  //     type: 'drink',
-  //     nationality: '',
-  //     category: 'Cocktail',
-  //     alcoholicOrNot: 'Alcoholic',
-  //     name: 'Aquamarine',
-  //     image: 'https://www.thecocktaildb.com/images/media/drink/zvsre31572902738.jpg',
-  //   },
-  // ];
-
-  // localStorage.setItem('favoriteRecipes', JSON.stringify(favorites));
-
-  // tudo o que está acima é pra deletar no push
   const [copy, setCopy] = useState({});
   const { buttonFilter } = useContext(RecipesContext);
   const history = useHistory();
@@ -70,7 +46,7 @@ function CardFavoritesRecipes() {
 
   return (
     <div>
-      { favoriteFilter()
+      { favoriteFilter() && favoriteFilter() // TODO: essa mudança faz sentido?
         .map(
           (
             {
